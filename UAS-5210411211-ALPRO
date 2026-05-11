@@ -1,0 +1,130 @@
+import sqlite3
+
+with sqlite3.connect("5210411211_Muhammad Rifqi Sahib.db") as db:
+    cursor = db.cursor()
+
+# Drop table -> Hapus tabel dari database
+cursor.execute('''DROP TABLE IF EXISTS pegawai;''')
+
+# Buat tabel
+cursor.execute('''CREATE TABLE IF NOT EXISTS pegawai (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nama TEXT,
+    Umur INTEGER,
+    Alamat CHAR (50),
+    Gaji REAL
+);''')
+
+pil = 0
+while True:
+    print( "** Aplikasi Sederhana **" )
+    print("1. Tambah Data Pegawai")
+    print("2. Edit Data Pegawai")
+    print("3. Hapus Data Pegawai")
+    print("4. Tampilkan Data Pegawai")
+    print("5. Cari Data Pegawai")
+    print("0. Keluar Program")
+
+    pil = input("Masukan Pilihan anda : ")
+
+    if pil == '1':
+        input_lagi = 'y'
+        while input_lagi == 'y':
+            print( "\nTambah data pegawai baru :" )
+            nama = str(input('-> Nama : '))
+            Umur = int(input('-> Umur : '))
+            Alamat =        (input("-> Alamat : "))
+            Gaji = input("-> Gaji : ")
+
+            query = '''INSERT INTO pegawai (Nama, Umur, Alamat, Gaji) VALUES (?,?,?,?)'''
+            cursor.execute(query, (nama, Umur, Alamat, Gaji))
+            db.commit()
+
+            input_lagi = input('\nInput data lagi? [Y/N]\n-> ').lower()
+            print("*"*50)
+    
+    elif pil == '2':
+        print( "\nEdit Data Pegawai")
+        query = '''SELECT Nama FROM pegawai;'''
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        # Tampilkan data
+        for row in results:
+            print("-> ",row)
+
+        # Input nomor pegawai
+        print("\nMasukan Nama pegawai yang akan diubah:")
+        na = str(input('-> Nama Pegawai: '))
+
+        # Cek data ada atau tidak
+        found = False
+        for row in results:
+            if row [0]== na :
+                found = True
+                print("\nPerbarui data pegawai :")
+                gaji = (input('-> Gaji Baru : '))
+
+                # Update
+                query = '''UPDATE pegawai SET Gaji = ?  WHERE Nama = ?;'''
+                cursor.execute(query, (gaji, na))
+                db.commit()
+
+        if not found:
+            print("\nMaaf, Nama Pegawai %s tidak ditemukan" % nama )
+
+        print("*"*50)
+
+    elif pil == '3':
+        print("\nHapus Data Pegawai")
+        query = '''SELECT Nama FROM pegawai;'''
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        # Tampilkan data
+        for row in results:
+            print("-> ",row)
+
+        # Input nama pegawai
+        print("\nMasukan Nama pegawai yang akan di Hapus:")
+        name_p = str(input('-> Nama Pegawai: '))
+
+        # Cek data ada atau tidak
+        found = False
+        for row in results:
+            if row [0]== name_p :
+                found = True
+
+                # Hapus
+                query = '''DELETE FROM pegawai WHERE Nama = ?;'''
+                cursor.execute(query, (name_p,))
+                db.commit()
+
+        if not found:
+            print("\nMaaf, Nama Pegawai %s tidak ditemukan" % name_p)
+        print("*"*50)
+
+    elif pil == '4':
+        print("\nTampilkan Data Pegawai")
+        query = '''SELECT * FROM pegawai;'''
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        # Tampilkan data
+        for row in results:
+            print("-> ",row)
+
+    elif pil == '5':
+        print("\nCari Data Pegawai Berdasarkan Nama Pegawai")
+        cari = str(input("-> Nama : "))
+        query4 = '''SELECT * FROM pegawai WHERE pegawai.nama = ? ;'''
+        cursor.execute(query4, (cari,))
+
+        # Tampilkan Data
+        for i in cursor.fetchall():
+            print('-> ', i)
+
+    elif pil == '0':
+        print("Keluar Program")
+        db.close()
+        break
